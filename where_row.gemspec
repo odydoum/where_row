@@ -30,4 +30,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "appraisal"
   spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "yard"
+  spec.add_development_dependency "gem-release"
 end
+
