@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Write row value queries in active record'
   spec.description   = 'Write row value queries in active record'
-  spec.homepage      = "https://github.com/odoumas/where_row"
+  spec.homepage      = "https://github.com/odydoum/where_row"
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 2.5.0"
 
