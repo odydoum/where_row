@@ -1,0 +1,1 @@
+module WhereRow::ActiveRecord; end
