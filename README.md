@@ -13,9 +13,9 @@ CREATE INDEX sl_dtid ON sales (sale_date, sale_id)
 
 SELECT *
   FROM sales
- WHERE (sale_date, sale_id) < (?, ?)
- ORDER BY sale_date DESC, sale_id DESC
- FETCH FIRST 10 ROWS ONLY
+WHERE (sale_date, sale_id) < (?, ?)
+ORDER BY sale_date DESC, sale_id DESC
+FETCH FIRST 10 ROWS ONLY
 ```
 
 The Row Value syntax is not supported in Rails directly. Furthermore, some databases still don't support this syntax as well, or maybe there is partial support (for example, the index is not properly utilized).
@@ -23,31 +23,31 @@ The Row Value syntax is not supported in Rails directly. Furthermore, some datab
 Thankfully, the same results can be achieved with plain-old logical expressions and comparisons. The equivalent query would look like this:
 
 ```SQL
- SELECT *
+SELECT *
   FROM sales
- WHERE sale_date <= ?
- AND NOT (sale_date = ? AND sale_id >= ?)
- ORDER BY sale_date DESC, sale_id DESC
- FETCH FIRST 10 ROWS ONLY
+WHERE sale_date <= ?
+AND NOT (sale_date = ? AND sale_id >= ?)
+ORDER BY sale_date DESC, sale_id DESC
+FETCH FIRST 10 ROWS ONLY
 ```
 
 This is something that can be directly expressed in Rails. One possible way is the following:
 
 ```ruby
-    Sales.
-        where(sale_date: (..date_offset)).
-        where.not(sale_date: date_offset, sale_id: (sale_id_offset..)).
-        order(sale_date: :desc, sale_id: :desc).
-        limit(10)
+Sales.
+  where(sale_date: (..date_offset)).
+  where.not(sale_date: date_offset, sale_id: (sale_id_offset..)).
+  order(sale_date: :desc, sale_id: :desc).
+  limit(10)
 ```
 
 However, the intent of this query is not clear at all when reading through this piece of code. Furthermore, if for any reason we need more than two columns (maybe by the sale's client_id), this will blow up pretty quickly. This gem allows us to generate this query/relation with a more explicit syntax.
 
 ```ruby
-    Sales.
-        where_row(:sale_date, :sale_id).lt(date_offset, sale_id_offset).
-        order(sale_date: :desc, sale_id: :desc).
-        limit(10)
+Sales.
+  where_row(:sale_date, :sale_id).lt(date_offset, sale_id_offset).
+  order(sale_date: :desc, sale_id: :desc).
+  limit(10)
 ```
 
 ## Installation
