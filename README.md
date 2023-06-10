@@ -6,6 +6,8 @@ Sometimes, the classic offset method to paginate results can be very inneficient
 
 Consider the following example, as it appears on [Use The Index Luke](https://use-the-index-luke.com/sql/partial-results/fetch-next-page)
 
+Suppose we want to have an infinite scrolling functionality for a collection of sales, ordered by the date the sale took place. Ordering just by sale_date will not suffice, since many sales can occur on the same date. Hence, we need to order by both the date and the id, to have a deterministic order. In SQL, this would look like this:
+
 ```SQL
 CREATE INDEX sl_dtid ON sales (sale_date, sale_id)
 
@@ -16,8 +18,7 @@ SELECT *
  FETCH FIRST 10 ROWS ONLY
 ```
 
-The Row Value syntax is straigth not supported in Rails in any way. Furthermore, some databases still don't support this syntax as well, or
-maybe there is partial support (for example, the index is not properly utilized).
+The Row Value syntax is not supported in Rails directly. Furthermore, some databases still don't support this syntax as well, or maybe there is partial support (for example, the index is not properly utilized).
 
 Thankfully, the same results can be achieved with plain-old logical expressions and comparisons. The equivalent query would look like this:
 
@@ -30,7 +31,7 @@ Thankfully, the same results can be achieved with plain-old logical expressions 
  FETCH FIRST 10 ROWS ONLY
 ```
 
-This is something that can be directly expressed in Rails/ One possible way is the following:
+This is something that can be directly expressed in Rails. One possible way is the following:
 
 ```ruby
     Sales.
@@ -40,7 +41,7 @@ This is something that can be directly expressed in Rails/ One possible way is t
         limit(10)
 ```
 
-However, the intent of this query is not clear at all when reading through this piece of code. Furthermore, if for any reason we need more than two columns, this will blow up pretty quickly. This gem allows us to generate this query/relation with a more explicit syntax.
+However, the intent of this query is not clear at all when reading through this piece of code. Furthermore, if for any reason we need more than two columns (maybe by the sale's client_id), this will blow up pretty quickly. This gem allows us to generate this query/relation with a more explicit syntax.
 
 ```ruby
     Sales.
