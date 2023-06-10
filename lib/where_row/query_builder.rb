@@ -84,19 +84,22 @@ module WhereRow
 
     def build_comparison_predicate
       last_idx = keys.size - 1
-      reversed_op = REVERSE_OP_MAP[operator]
-      last_pred = build_predicate_for_key(relation, last_idx, reversed_op)
 
-      return last_pred if last_idx.zero?
+      if last_idx.zero?
+        return build_predicate(relation, keys[last_idx], values[last_idx], operator)
+      end
 
-      first_keys_op = :lt if reversed_op == :lteq
-      first_keys_op = :gt if reversed_op == :gteq
-      first_keys_op ||= reversed_op
+      last_pred = build_predicate_for_key(relation, last_idx, operator)
+
+      first_keys_op = :lt if operator == :lteq
+      first_keys_op = :gt if operator == :gteq
+      first_keys_op ||= operator
 
       (0...last_idx).
         map { |i| build_predicate_for_key(relation, i, first_keys_op) }.
         reduce(:and).
-        and(last_pred)
+        and(last_pred).
+        not
     end
 
     def build_predicate_for_key(relation, idx, op)
